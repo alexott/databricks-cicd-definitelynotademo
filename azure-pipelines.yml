@@ -28,7 +28,7 @@ steps:
 # on a cluster.
 - script: |
     pip install pytest requests setuptools wheel
-    pip install -U databricks-connect==$(dbrVersion) # we may not need databricks-connect
+    pip install -U databricks-connect==${{ dbrVersion }} # we may not need databricks-connect
     pip install -U databricks-cli
   displayName: 'Load Python Dependencies'
 
