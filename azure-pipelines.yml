@@ -40,7 +40,7 @@ steps:
 - script: |
     echo "[DEFAULT]" > ~/.databrickscfg
     echo "host = $(workspace_url)" >> ~/.databrickscfg
-    ehco "token = $(cluster_id)" >> ~/.databrickscfg
+    echo "token = $(cluster_id)" >> ~/.databrickscfg
   displayName: 'Configure Databricks CLI'
  
 #Download code from designated branch to the agent
