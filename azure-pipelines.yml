@@ -38,9 +38,8 @@ steps:
   displayName: 'Configure DBConnect'
 
 - script: |
-    echo "[DEFAULT]" > ~/.databrickscfg
-    echo "host = $(workspace_url)" >> ~/.databrickscfg
-    echo "token = $(cluster_id)" >> ~/.databrickscfg
+    echo "$(workspace_url)
+    $(databricks_token)" | databricks configure --token
   displayName: 'Configure Databricks CLI'
  
 #Download code from designated branch to the agent
