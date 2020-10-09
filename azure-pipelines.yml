@@ -23,7 +23,7 @@ steps:
 # on a cluster.
 - script: |
     pip install pytest requests setuptools wheel
-    pip install -U databricks-connect==6.6.*
+    pip install -U databricks-connect==6.6.* databricks-cli
   displayName: 'Load Python Dependencies'
 
 # Use environment variables to pass Databricks login information to the Databricks Connect
@@ -37,6 +37,12 @@ steps:
     15001" | databricks-connect configure
   displayName: 'Configure DBConnect'
 
+- script: |
+    echo "[DEFAULT]" > ~/.databrickscfg
+    echo "host = $(workspace_url)" >> ~/.databrickscfg
+    ehco "token = $(cluster_id)" >> ~/.databrickscfg
+  displayName: 'Configure Databricks CLI'
+ 
 #Download code from designated branch to the agent
 - checkout: self
   persistCredentials: true
@@ -74,6 +80,11 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
+
+- script: |
+    databricks fs mkdirs 'dbfs:/FileStore/artifacts/'
+    databricks fs cp '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' 'dbfs:/FileStore/artifacts/'
+  displayName: "Copy artifact to Databricks"
 
 - task: PublishBuildArtifacts@1
   inputs:
