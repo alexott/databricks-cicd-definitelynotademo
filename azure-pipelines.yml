@@ -3,6 +3,11 @@
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
+parameters:
+- name: dbrVersion
+  displayName: 'DBR Version to use?'
+  type: string
+  default: '6.6.*'
 
 # New code merged into the release branch initiaties a build
 trigger:
@@ -23,7 +28,8 @@ steps:
 # on a cluster.
 - script: |
     pip install pytest requests setuptools wheel
-    pip install -U databricks-connect==6.5.*
+    pip install -U databricks-connect==${{ parameters.dbrVersion }} # we may not need databricks-connect
+    pip install -U databricks-cli
   displayName: 'Load Python Dependencies'
 
 # Use environment variables to pass Databricks login information to the Databricks Connect
@@ -37,6 +43,11 @@ steps:
     15001" | databricks-connect configure
   displayName: 'Configure DBConnect'
 
+- script: |
+    echo "$(workspace_url)
+    $(databricks_token)" | databricks configure --token
+  displayName: 'Configure Databricks CLI'
+ 
 #Download code from designated branch to the agent
 - checkout: self
   persistCredentials: true
@@ -74,6 +85,11 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
+
+- script: |
+    databricks fs mkdirs 'dbfs:/FileStore/artifacts/'
+    databricks fs cp '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip' 'dbfs:/FileStore/artifacts/'
+  displayName: "Copy artifact to Databricks"
 
 - task: PublishBuildArtifacts@1
   inputs:
