@@ -8,21 +8,7 @@ parameters:
   displayName: 'DBR Version to use?'
   type: string
   default: '6.6.*'
-
-# variables for databricks-connect & databricks-cli
-# databricks_host & databricks_token need to be named as-is, as they are
-# transformed into environment variables DATABRICKS_HOST & DATABRICKS_TOKEN
-# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables
-variables:
-- name: databricks_host
-  value: ''
-- name: databricks_token
-  value: ''
-- name: cluster_id
-  value: ''
-- name: org_id
-  value: ''
-  
+ 
 # New code merged into the release branch initiaties a build
 trigger:
 - release
@@ -50,10 +36,10 @@ steps:
 # configuration function
 - script: |
     echo "y
-    $DATABRICKS_HOST
-    $DATABRICKS_TOKEN
-    $CLUSTER_ID
-    $ORG_ID
+    $(databricks_host)
+    $(databricks_token)
+    $(cluster_id)
+    $(org_id)
     15001" | databricks-connect configure
   displayName: 'Configure DBConnect'
 
