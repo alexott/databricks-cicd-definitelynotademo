@@ -50,10 +50,10 @@ steps:
 # configuration function
 - script: |
     echo "y
-    $(databricks_host)
-    $(databricks_token)
-    $(cluster_id)
-    $(org_id)
+    $DATABRICKS_HOST
+    $DATABRICKS_TOKEN
+    $CLUSTER_ID
+    $ORG_ID
     15001" | databricks-connect configure
   displayName: 'Configure DBConnect'
 
